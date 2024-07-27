@@ -1,0 +1,28 @@
+textarea {
+    min-height: 400px;
+    margin-bottom: 20px
+};
+
+.email{
+    animation-name: hide;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-play-state: paused;
+}
+
+.card-body {
+    border: 1px solid black;
+    margin-bottom: 20px;
+}
+
+.email-view .card {
+    margin-top: 20px;
+}
+
+.email-unread {
+    background-color: white;
+}
+
+.email-read {
+    background-color: #dbdbdb; 
+}
