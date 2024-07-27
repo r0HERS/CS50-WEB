@@ -1,0 +1,88 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="profile-header d-flex justify-content-between align-items-center pb-3 border-bottom">
+        <div>
+            <h1 class="profile-username">{{ profile_user.username }}</h1>
+        </div>
+        <div class="d-flex">
+            <h3 class="mx-3">Followers: {{ followers.count }}</h3>
+            <h3 class="mx-3">Following: {{ following.count }}</h3>
+        </div>
+        {% if user.is_authenticated %}
+        {% if user.id != profile_user.id %}
+            <div class="submit-button">
+                {% if follow %}
+                    <form action="{% url 'follow' id=profile_user.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Unfollow</button>
+                    </form>
+                {% else %}
+                    <form action="{% url 'follow' id=profile_user.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Follow</button>
+                    </form>
+                {% endif %}
+            </div>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+    <div class="container mt-5">
+        <div class="posts-container">
+            {% for post in page_posts %}
+                <div class="post-card card mb-3 shadow-sm">
+                    <div id="post" class="card-body">
+                        <h5 class="card-title"><a href="{% url 'profile' id=post.user.id %}">{{ post.user.username }}</a></h5>
+                        <div id="text-container-{{ post.id }}">
+                            <p class="card-text" id="post-text-{{ post.id }}">{{ post.text }}</p>
+                            <textarea class="textarea-post" name="text" id="textarea-{{ post.id }}"></textarea>
+                        </div>
+                        <p class="card-text text-muted"><small>{{ post.timestamp }}</small></p>
+                    </div>
+                    {% if user == post.user %}
+                        <div class="text-right button-container">
+                            <button class="btn btn-primary edit-button" data-post_id="{{ post.id }}">Edit</button>
+                        </div>
+                        <p class="like-count">Likes: <span class="like-count" id="like-count-{{ post.id }}">{{ post.liked_post.count }}</span></p>
+                    {% else %}
+                    <p class="like-count">Likes: <span class="like-count" id="like-count-{{ post.id }}">{{ post.liked_post.count }}</span></p>
+                    {% if user.is_authenticated %}
+                        {% if post in liked_posts %}
+                        <div class="like-container" data-post_id="{{ post.id }}" data-liked="true" data-likes="{{ likes.post.count }}">
+                            <button id="like-{{post.id}}" class="btn btn-dislike" >
+                                <i class="bi bi-hand-thumbs-down-fill"></i>
+                            </button>
+                        </div>
+                        {% else %}
+                        <div class="like-container" data-post_id="{{ post.id }}" data-liked="false" data-likes="{{ likes.post.count }}">
+                            <button id="unlike-{{post.id}}" class="btn btn-like" >
+                                <i class="bi bi-hand-thumbs-up-fill"></i>
+                            </button>
+                        </div>
+                        {% endif %}
+                    {% endif %}
+                    {% endif %}
+                </div>
+
+
+            {% endfor %}
+        </div>
+        <div class="nav-container">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    {% if page_posts.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_posts.previous_page_number }}">Previous</a></li>
+                    {% endif %}
+                    {% if page_posts.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_posts.next_page_number }}">Next</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    
+{% endblock %}
+
